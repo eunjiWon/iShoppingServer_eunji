@@ -135,3 +135,16 @@ if __name__ == "__main__":
 
   for i in top_k:
     print(labels[i], results[i])
+	
+_index = top_k[0]
+var1 = labels[_index]
+var2 = results[_index]
+ 
+print("This is maybe ... " + var1, var2)		
+try: 
+	f = open("/opt/tensorflow-for-poets-2/t.txt", "w")
+	f.write(var1)
+except IOError:
+	print("Error: can't find file or read data")
+else:
+	print("Written content in the file successfully")

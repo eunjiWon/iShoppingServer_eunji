@@ -1,0 +1,20 @@
+doctype html
+html
+    head
+        meta(charset='utf-8')
+    body
+        h1 
+            a(href='/topic') 가스리 친구들 안녕
+        ul  
+            each topic in topics
+                li
+                    - rid = topic._id
+                    a(href='/topic/'+rid)= topic.name
+        artcle
+            form(action='/topic/add' method='post')
+                p
+                    input(type='text' name='name' placeholder='name')
+                p
+                    textarea(name='address' placeholder='address')
+                p
+                    input(type='submit')

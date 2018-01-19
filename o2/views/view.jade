@@ -1,0 +1,29 @@
+doctype html
+html
+    head
+        meta(charset='utf-8')
+    body
+        h1 
+            a(href='/topic') 가스리 친구들 안녕
+        ul  
+            each topic in topics
+                li
+                    - rid = topic._id
+                    a(href='/topic/'+rid)= topic.name
+        artcle
+            if _topic
+                h2= _topic.name
+                = _topic.address
+            else
+                h2 Welcome
+                | This is server side javascript tutorial.
+        ul
+            li
+                a(href='/topic/add') add
+            if _topic
+                - rid = _topic._id
+                li
+                    a(href='/topic/' + rid + '/edit') edit
+                li
+                    a(href='/topic/' + rid + '/delete') delete
+                                

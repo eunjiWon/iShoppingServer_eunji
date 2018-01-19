@@ -1,0 +1,23 @@
+{
+  "name": "o2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.180.0",
+    "body-parser": "^1.18.2",
+    "cors": "^2.8.4",
+    "jade": "^1.11.0",
+    "mongodb": "^3.0.1",
+    "morgan": "^1.9.0",
+    "supervisor": "^0.12.0",
+		"mongoose": "^4.6.2",
+		"http": "0.0.0",
+    "method-override": "^2.3.6"
+  }
+}
