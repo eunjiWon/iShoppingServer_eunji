@@ -140,7 +140,7 @@ _index = top_k[0]
 var1 = labels[_index]
 var2 = results[_index]
  
-print("This is maybe ... " + var1, var2)		
+print("This is maybe ... " + var1)		
 try: 
 	f = open("/opt/tensorflow-for-poets-2/t.txt", "w")
 	f.write(var1)

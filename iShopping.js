@@ -10,45 +10,50 @@ var bodyParser = require('body-parser');    // pull information from HTML POST (
 var methodOverride = require('method-override'); // simulate DELETE and PUT (express4)
 var cors = require('cors');
 var passport = require('passport');
+var router = require('./app/routes');
+const multer = require('multer');
+const imageModule = require('./image');
+const path = require('path');
+const fs = require('fs');
+const del = require('del');
+let UPLOAD_PATH = 'uploads/';
+let PORT = 3000;
 
-// tensorflow connect
+/* tensorflow connect
 var PythonShell = require('python-shell');
 var options = {
-	args: ['--graph=tf_files/retrained_graph.pb', '--image=tf_files/flower_photos/roses/2414954629_3708a1a04d.jpg'],       
+	args: ['--graph=tf_files/retrained_graph.pb', '--image=tf_files/flower_photos/Blouse/blouse50.jpg'],       
 	scriptPath: '/opt/tensorflow-for-poets-2/scripts'
 };
 PythonShell.run('label_image.py', options, function (err, res) {
 	if (err) {console.log("err is  " + err);}
 	console.log("성공	: " + res);
-});             
-
-// Configuration
+});
+*/
+             
 mongoose.connect('mongodb://localhost/iShopping');
-//mongoose.connect('mongodb://testUser:test@localhost/test');
 
-//mongoose.Promise = global.Promise;
- 
 app.use(morgan('dev'));                                         // log every request to the console
 app.use(bodyParser.urlencoded({'extended':'true'}));            // parse application/x-www-form-urlencoded
 app.use(bodyParser.json());                                     // parse application/json
 app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse application/vnd.api+json as json
 app.use(methodOverride());
 app.use(cors());
- 
 app.use(function(req, res, next) {
    res.header("Access-Control-Allow-Origin", "*");
    res.header('Access-Control-Allow-Methods', 'DELETE, PUT');
    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
    next();
 });
- 
+// passport module 사용하기 위해 
+router(app);
 // Models
 var clothInf = mongoose.model('clothInf', {
     name: String,
     spot: String,
     price: Number
 });
- 
+
 // Routes
  
     // Get reviews
@@ -98,7 +103,91 @@ var clothInf = mongoose.model('clothInf', {
         });
     });
  
- 
+// camera part
+//multer Settings for file upload
+
+var storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, UPLOAD_PATH)
+    },
+    filename: function(req, file, cb){
+        cb(null, file.fieldname + '-'+Date.now())
+    }
+})
+
+let upload = multer ({ storage: storage})
+
+module.exports = {
+    UPLOAD_PATH: UPLOAD_PATH,
+    PORT: PORT,
+    upload: upload,
+    app: app
+};
+
+
+
+// Get all uploaded images
+app.get('/images', (req, res, next) => {
+    // use lean() to get a plain JS object
+    // remove the version key from the response
+    imageModule.Image.find({}, '-__v').lean().exec((err, images) => {
+        if (err) {
+            res.sendStatus(400);
+        }
+
+        // Manually set the correct URL to each image
+        for (let i = 0; i < images.length; i++) {
+            var img = images[i];
+            img.url = req.protocol + '://' + req.get('host') + '/images/' + img._id;
+        }
+        res.json(images);
+    })
+});
+
+
+// Upload a new image with description
+app.post('/images', upload.single('image'), (req, res, next) => {
+    // Create a new image model and fill the properties
+    let newImage = new imageModule.Image;
+    newImage.filename = req.file.filename;
+    newImage.originalName = req.file.originalname;
+    newImage.desc = req.body.desc
+    newImage.save(err => {
+        if (err) {
+            return res.sendStatus(400);
+        }
+        res.status(201).send({ newImage });
+    });
+
+})
+
+// Get one image by its ID
+app.get('/images/:id', (req, res, next) => {
+    let imgId = req.params.id;
+     imageModule.Image.findById(imgId, (err, image) => {
+        if (err) {
+            res.sendStatus(400);
+        }
+        // stream the image back by loading the file
+        res.setHeader('Content-Type', 'image/jpeg');
+        fs.createReadStream(path.join(UPLOAD_PATH, image.filename)).pipe(res);
+    })
+});
+
+// Delete one image by its ID
+app.delete('/images/:id', (req, res, next) => {
+    let imgId = req.params.id;
+
+     imageModule.Image.findByIdAndRemove(imgId, (err, image) => {
+        if (err && image) {
+            res.sendStatus(400);
+        }
+	console.log("delete: ", image);
+        del([path.join(UPLOAD_PATH, image.filename)]).then(deleted => {
+            res.sendStatus(200);
+        })
+    })
+}); 
 // listen (start app with node server.js) ======================================
 app.listen(3000);
 console.log("App listening on port 3000");
