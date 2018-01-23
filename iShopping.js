@@ -1,3 +1,7 @@
+/*
+* Created on 2018.01.19
+* @author: eunjiwon
+*/
 var express  = require('express');
 var app      = express();                               // create our app w/ express
 var mongoose = require('mongoose');                     // mongoose for mongodb
@@ -5,7 +9,9 @@ var morgan = require('morgan');             // log requests to the console (expr
 var bodyParser = require('body-parser');    // pull information from HTML POST (express4)
 var methodOverride = require('method-override'); // simulate DELETE and PUT (express4)
 var cors = require('cors');
+var passport = require('passport');
 
+// tensorflow connect
 var PythonShell = require('python-shell');
 var options = {
 	args: ['--graph=tf_files/retrained_graph.pb', '--image=tf_files/flower_photos/roses/2414954629_3708a1a04d.jpg'],       
@@ -18,6 +24,9 @@ PythonShell.run('label_image.py', options, function (err, res) {
 
 // Configuration
 mongoose.connect('mongodb://localhost/iShopping');
+//mongoose.connect('mongodb://testUser:test@localhost/test');
+
+//mongoose.Promise = global.Promise;
  
 app.use(morgan('dev'));                                         // log every request to the console
 app.use(bodyParser.urlencoded({'extended':'true'}));            // parse application/x-www-form-urlencoded
