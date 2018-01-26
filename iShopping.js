@@ -18,19 +18,30 @@ const fs = require('fs');
 const del = require('del');
 let UPLOAD_PATH = 'uploads/';
 let PORT = 3000;
+//var tensor = require('/opt/tensorflow-for-poets-2_1/childProcess.js');
+//tensor.tensor();
+
+var PythonShell = require('python-shell');
+        var options2 = {
+//                args: ['--graph=/opt/tensorflow-for-poets-2_1/tf_files/retrained_graph.pb', '--image=/opt/tensorflow-for-poets-2_1/tf_files/flower_photos/red/31.jpg'],
+                scriptPath: '/opt/tensorflow-for-poets-2_1/scripts/'
+        };
+        PythonShell.run('label_image_1.py', options2, function (err, res) {
+                if (err) {console.log("err is  " + err);}
+                console.log("옷 색깔 분류 성공  : " + res);
+        });
 
 /* tensorflow connect
-var PythonShell = require('python-shell');
-var options = {
-	args: ['--graph=tf_files/retrained_graph.pb', '--image=tf_files/flower_photos/Blouse/blouse50.jpg'],       
+
+var options1 = {
+	args: ['--graph=/opt/tensorflow-for-poets-2/tf_files/retrained_graph.pb', '--image=/opt/tensorflow-for-poets-2_1/tf_files/flower_photos/red/31.jpg'],       
 	scriptPath: '/opt/tensorflow-for-poets-2/scripts'
 };
-PythonShell.run('label_image.py', options, function (err, res) {
+PythonShell.run('label_image.py', options1, function (err, res) {
 	if (err) {console.log("err is  " + err);}
-	console.log("성공	: " + res);
+	console.log("옷 형태 분류 성공	: " + res);
 });
-*/
-             
+*/           
 mongoose.connect('mongodb://localhost/iShopping');
 
 app.use(morgan('dev'));                                         // log every request to the console
