@@ -12,26 +12,22 @@ var cors = require('cors');
 var passport = require('passport');
 var router = require('./app/routes');
 const multer = require('multer');
-const imageModule = require('./image');
+//const imageModule = require('./image');
 const path = require('path');
 const fs = require('fs');
 const del = require('del');
 let UPLOAD_PATH = 'uploads/';
 let PORT = 3000;
-//var tensor = require('/opt/tensorflow-for-poets-2_1/childProcess.js');
-//tensor.tensor();
-
+/*
 var PythonShell = require('python-shell');
         var options2 = {
-//                args: ['--graph=/opt/tensorflow-for-poets-2_1/tf_files/retrained_graph.pb', '--image=/opt/tensorflow-for-poets-2_1/tf_files/flower_photos/red/31.jpg'],
+                args: ['--graph=/opt/tensorflow-for-poets-2_1/tf_files/retrained_graph.pb', '--image=/opt/tensorflow-for-poets-2_1/tf_files/flower_photos/red/31.jpg'],
                 scriptPath: '/opt/tensorflow-for-poets-2_1/scripts/'
         };
         PythonShell.run('label_image_1.py', options2, function (err, res) {
                 if (err) {console.log("err is  " + err);}
                 console.log("옷 색깔 분류 성공  : " + res);
         });
-
-/* tensorflow connect
 
 var options1 = {
 	args: ['--graph=/opt/tensorflow-for-poets-2/tf_files/retrained_graph.pb', '--image=/opt/tensorflow-for-poets-2_1/tf_files/flower_photos/red/31.jpg'],       
@@ -41,7 +37,7 @@ PythonShell.run('label_image.py', options1, function (err, res) {
 	if (err) {console.log("err is  " + err);}
 	console.log("옷 형태 분류 성공	: " + res);
 });
-*/           
+*/         
 mongoose.connect('mongodb://localhost/iShopping');
 
 app.use(morgan('dev'));                                         // log every request to the console
@@ -114,7 +110,7 @@ var clothInf = mongoose.model('clothInf', {
         });
     });
  
-// camera part
+/* camera part
 //multer Settings for file upload
 
 var storage = multer.diskStorage({
@@ -198,7 +194,9 @@ app.delete('/images/:id', (req, res, next) => {
             res.sendStatus(200);
         })
     })
-}); 
+});
+*/
+ 
 // listen (start app with node server.js) ======================================
 app.listen(3000);
 console.log("App listening on port 3000");

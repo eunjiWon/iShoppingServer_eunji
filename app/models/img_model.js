@@ -5,6 +5,9 @@ imageSchema = mongoose.Schema({
     filename: String,
     originalName: String,
     desc: String,
+    userID: String,
+    lat: Number,
+    lon: Number,
     created: { type: Date, default: Date.now }
 });
 
