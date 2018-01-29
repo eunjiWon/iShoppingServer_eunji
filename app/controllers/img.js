@@ -1,5 +1,3 @@
-//var express  = require('express');
-//var app      = express();      
 var multer = require('multer');
 var imageModule = require('../models/img_model');
 var path = require('path');
@@ -19,25 +17,20 @@ var storage = multer.diskStorage({
 })
 
 let upload = multer ({ storage: storage})
-/*
-module.exports = {
-    UPLOAD_PATH: UPLOAD_PATH,
-    PORT: PORT,
-    upload: upload,
-    app: app
-};
-*/
+
 exports.getAllUploadedImg = function(req, res, next){
-    imageModule.find({userID: req.params.user_id}, '-__v').lean().exec((err, images) => {
+     imageModule.Image.find({userID: req.params.user_id}, '-__v').lean().exec((err, images) => {
+    // imageModule.find({userID: req.params.user_id}, '-__v').lean().exec((err, images) => {
         if (err) {
             console.log("이미지 겟 fail1");
             res.sendStatus(400);
         }
         console.log("이미지 겟 성공1");
         // Manually set the correct URL to each image
+        let user_id = req.params.user_id;
         for (let i = 0; i < images.length; i++) {
             var img = images[i];
-            img.url = req.protocol + '://' + req.get('host') + '/images/' + img._id;
+            img.url = req.protocol + '://' + req.get('host') + '/api/users/' + user_id +'/images/' + img._id;
         }
         res.json(images);
     }) 
@@ -58,10 +51,15 @@ exports.getOneImgID = function(req, res, next){
  
 exports.uploadNewImg = function(req, res, next){
      // Create a new image model and fill the properties
+   // upload.single('image');
     let newImage = new imageModule.Image;
     newImage.filename = req.file.filename;
     newImage.originalName = req.file.originalname;
     newImage.desc = req.body.desc;
+    newImage.lat = req.body.lat;
+    newImage.lon = req.body.lon;
+    console.log("desc : " + req.body.desc);
+    console.log("lat : " + req.body.lat);
     newImage.userID = req.params.user_id;
     newImage.save(err => {
         if (err) {
