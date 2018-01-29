@@ -6,8 +6,10 @@ imageSchema = mongoose.Schema({
     originalName: String,
     desc: String,
     userID: String,
-    lat: String,
-    lon: String,
+    lat: Number,
+    lng:  Number,
+    color: String,
+    shape: String,
     created: { type: Date, default: Date.now }
 });
 

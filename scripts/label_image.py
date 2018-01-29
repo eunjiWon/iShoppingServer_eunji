@@ -142,7 +142,7 @@ var2 = results[_index]
  
 print("This is maybe ... " + var1)		
 try: 
-	f = open("/opt/tensorflow-for-poets-2/t.txt", "a")
+	f = open("/opt/tensorflow-for-poets-2/t1.txt", "w")
 	f.write(var1)
 except IOError:
 	print("Error: can't find file or read data")

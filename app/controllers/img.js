@@ -5,18 +5,19 @@ var fs = require('fs');
 var del = require('del');
 let UPLOAD_PATH = '/opt/tensorflow-for-poets-2/uploads/';
 let PORT = 3000;
+var PythonShell = require('python-shell');
 //multer Settings for file upload
-
 var storage = multer.diskStorage({
     destination: function(req, file, cb) {
         cb(null, UPLOAD_PATH)
     },
     filename: function(req, file, cb){
-        cb(null, file.fieldname + '-'+Date.now())
+        cb(null,  file.fieldname + '-' + Date.now());
     }
 })
 
 let upload = multer ({ storage: storage})
+
 
 exports.getAllUploadedImg = function(req, res, next){
      imageModule.Image.find({userID: req.params.user_id}, '-__v').lean().exec((err, images) => {
@@ -51,23 +52,49 @@ exports.getOneImgID = function(req, res, next){
  
 exports.uploadNewImg = function(req, res, next){
      // Create a new image model and fill the properties
-   // upload.single('image');
     let newImage = new imageModule.Image;
-    newImage.filename = req.file.filename;
-    newImage.originalName = req.file.originalname;
-    newImage.desc = req.body.desc;
-    newImage.lat = req.body.lat;
-    newImage.lon = req.body.lon;
-    console.log("desc : " + req.body.desc);
-    console.log("lat : " + req.body.lat);
-    newImage.userID = req.params.user_id;
-    newImage.save(err => {
-        if (err) {
-            console.log("이미지 포스트(저장) fail");
-            return res.sendStatus(400);
-        }
-        console.log("이미지 포스트(저장) 성공");
-        res.status(201).send({ newImage });
+
+    // 텐서플로우 
+    let options2 = {
+        args: ['--graph=/opt/tensorflow-for-poets-2_1/tf_files/retrained_graph.pb', '--image=/opt/tensorflow-for-poets-2/uploads/'+ req.file.filename],
+        scriptPath: '/opt/tensorflow-for-poets-2_1/scripts/'
+    };
+    PythonShell.run('label_image_1.py', options2, function (err1, resu) {
+         if (err1) {console.log("err is  " + err1);}
+         console.log("옷 색깔 분류 성공  : ");
+    });
+    let options1 = {
+        args: ['--graph=/opt/tensorflow-for-poets-2/tf_files/retrained_graph.pb', '--image=/opt/tensorflow-for-poets-2/uploads/' + req.file.filename],
+        scriptPath: '/opt/tensorflow-for-poets-2/scripts'
+    };
+    PythonShell.run('label_image.py', options1, function (err2, resu) {
+        if (err2) {console.log("err is  " + err2);}
+        console.log("옷 형태 분류 성공  : ");
+        const article1 = fs.readFileSync("/opt/tensorflow-for-poets-2/t.txt");
+        lineArray1 = article1.toString().split('\n');
+        const article2 = fs.readFileSync("/opt/tensorflow-for-poets-2/t1.txt");
+        lineArray2 = article2.toString().split('\n');
+        
+        newImage.filename = req.file.filename;
+        newImage.originalName = req.file.originalname;
+        newImage.desc = req.body.desc;
+        newImage.lat = req.body.lat;
+        newImage.lng = req.body.lng;
+        console.log("lat : " + req.body.lat);
+        newImage.userID = req.params.user_id;
+        newImage.color = lineArray1[0];
+        newImage.shape = lineArray2[0];
+        console.log("color, shape is : " + lineArray[0] + " " + lineArray[1]);
+        newImage.save(err3 => {
+            if (err3) { 
+                console.log("이미지 포스트(저장) fail" + err3);
+                return res.sendStatus(400);
+            }
+            else{
+                console.log("이미지 포스트(저장) 성공");
+                res.status(201).send({ newImage });
+            }
+        });
     });
 }
 
