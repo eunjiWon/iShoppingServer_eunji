@@ -53,7 +53,6 @@ exports.getOneImgID = function(req, res, next){
 exports.uploadNewImg = function(req, res, next){
      // Create a new image model and fill the properties
     let newImage = new imageModule.Image;
-
     // 텐서플로우 
     let options2 = {
         args: ['--graph=/opt/tensorflow-for-poets-2_1/tf_files/retrained_graph.pb', '--image=/opt/tensorflow-for-poets-2/uploads/'+ req.file.filename],
@@ -70,21 +69,18 @@ exports.uploadNewImg = function(req, res, next){
     PythonShell.run('label_image.py', options1, function (err2, resu) {
         if (err2) {console.log("err is  " + err2);}
         console.log("옷 형태 분류 성공  : ");
-        const article1 = fs.readFileSync("/opt/tensorflow-for-poets-2/t.txt");
-        lineArray1 = article1.toString().split('\n');
-        const article2 = fs.readFileSync("/opt/tensorflow-for-poets-2/t1.txt");
-        lineArray2 = article2.toString().split('\n');
-        
+        var clothShape = fs.readFileSync("/opt/tensorflow-for-poets-2/t.txt");
+        var clothColor = fs.readFileSync("/opt/tensorflow-for-poets-2/t1.txt");
+        newImage.color = clothShape;
+        newImage.shape = clothColor;
         newImage.filename = req.file.filename;
         newImage.originalName = req.file.originalname;
         newImage.desc = req.body.desc;
         newImage.lat = req.body.lat;
         newImage.lng = req.body.lng;
         console.log("lat : " + req.body.lat);
+        console.log("shape : " + clothShape + "  color : " + clothColor);
         newImage.userID = req.params.user_id;
-        newImage.color = lineArray1[0];
-        newImage.shape = lineArray2[0];
-        console.log("color, shape is : " + lineArray[0] + " " + lineArray[1]);
         newImage.save(err3 => {
             if (err3) { 
                 console.log("이미지 포스트(저장) fail" + err3);
