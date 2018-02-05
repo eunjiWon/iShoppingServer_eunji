@@ -4,8 +4,8 @@
   "description": "This repo contains code for the \"TensorFlow for poets 2\" series of codelabs.",
   "main": "childProcess.js",
   "scripts": {
- 	"start": "node ./iShopping.js",
-  "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./iShopping.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
