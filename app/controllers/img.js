@@ -1,3 +1,4 @@
+var Uniqlo = require('../models/uniqlo');
 var multer = require('multer');
 var imageModule = require('../models/img_model');
 var path = require('path');
@@ -6,6 +7,7 @@ var del = require('del');
 let UPLOAD_PATH = '/opt/tensorflow-for-poets-2/uploads/';
 let PORT = 3000;
 var PythonShell = require('python-shell');
+var clothShape, clothColor;
 //multer Settings for file upload
 var storage = multer.diskStorage({
     destination: function(req, file, cb) {
@@ -69,8 +71,8 @@ exports.uploadNewImg = function(req, res, next){
     PythonShell.run('label_image.py', options1, function (err2, resu) {
         if (err2) {console.log("err is  " + err2);}
         console.log("옷 형태 분류 성공  : ");
-        var clothShape = fs.readFileSync("/opt/tensorflow-for-poets-2/t.txt");
-        var clothColor = fs.readFileSync("/opt/tensorflow-for-poets-2/t1.txt");
+        clothShape = fs.readFileSync("/opt/tensorflow-for-poets-2/t.txt");
+        clothColor = fs.readFileSync("/opt/tensorflow-for-poets-2/t1.txt");
         newImage.color = clothShape;
         newImage.shape = clothColor;
         newImage.filename = req.file.filename;
@@ -78,8 +80,9 @@ exports.uploadNewImg = function(req, res, next){
         newImage.desc = req.body.desc;
         newImage.lat = req.body.lat;
         newImage.lng = req.body.lng;
-        console.log("lat : " + req.body.lat);
-        console.log("shape : " + clothShape + "  color : " + clothColor);
+        newImage.store = req.body.store;
+        console.log("lat : " + req.body.lat);//
+        console.log("shape : " + clothShape + "  color : " + clothColor);//
         newImage.userID = req.params.user_id;
         newImage.save(err3 => {
             if (err3) { 
@@ -96,8 +99,7 @@ exports.uploadNewImg = function(req, res, next){
 
 exports.deleteOneImgID = function(req, res, next){
     let imgId = req.params.img_id;
-
-     imageModule.Image.findByIdAndRemove(imgId, (err, image) => {
+    imageModule.Image.findByIdAndRemove(imgId, (err, image) => {
         if (err && image) {
             res.sendStatus(400);
         }
@@ -107,4 +109,19 @@ exports.deleteOneImgID = function(req, res, next){
         })
     })
 }
+// matching limit 5 
+exports.matching = function(req, res, next){
+    Uniqlo.find({shape: clothShape, color: clothColor}, {limit: 5}, function(err, res){
+        if(err) throw err;
+        else{
+            if(res.length == 0) console.log("no information");
+            else{
+                console.log(res);
+                //res.send(res);
+            } 
+        }
+    })
+}
+
+
 

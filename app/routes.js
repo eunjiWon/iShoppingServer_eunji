@@ -37,14 +37,6 @@ module.exports = function(app){
         res.send({ content: 'Success'});
     });
  
-    /* Todo Routes
-    apiRoutes.use('/users', todoRoutes);
- 
-    todoRoutes.get('/:user_id/todos', requireAuth, AuthenticationController.roleAuthorization(['reader','creator','editor']), TodoController.getTodos);
-    todoRoutes.post('/:user_id/todos', requireAuth, AuthenticationController.roleAuthorization(['creator','editor']), TodoController.createTodo);
-    todoRoutes.delete('/:user_id/todos/:todo_id', requireAuth, AuthenticationController.roleAuthorization(['editor']), TodoController.deleteTodo);
-    */
-
     // Img Routes
     apiRoutes.use('/users', imgRoutes);
 
@@ -52,6 +44,8 @@ module.exports = function(app){
     imgRoutes.get('/:user_id/images/:img_id', ImgController.getOneImgID);
     imgRoutes.post('/:user_id/images',upload.single('image'), ImgController.uploadNewImg);
     imgRoutes.delete('/:user_id/images/:img_id', ImgController.deleteOneImgID);
+    //matching
+    imgRoutes.get('/:user_id/images/:img_id/matching', ImgController.matching);
 
     // Set up routes
     app.use('/api', apiRoutes);

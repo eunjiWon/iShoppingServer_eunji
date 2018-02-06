@@ -10,6 +10,7 @@ imageSchema = mongoose.Schema({
     lng:  Number,
     color: String,
     shape: String,
+    store: String,
     created: { type: Date, default: Date.now }
 });
 
